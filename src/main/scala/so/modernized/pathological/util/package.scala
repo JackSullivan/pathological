@@ -1,6 +1,7 @@
 package so.modernized.pathological
 
 import java.io.{BufferedReader, File}
+import scala.reflect._
 
 /**
  * @author John Sullivan
@@ -8,7 +9,7 @@ import java.io.{BufferedReader, File}
 package object util {
 
   implicit class FileExtras(f:File) {
-    /** if file is a directory returns all files in all subdirectories that match pred, otherwise returns itself in a seq */
+    /** if file is a directory returns all files in all subdirectories, otherwise returns itself in a seq */
     def getFiles:Seq[File] = {
 
       def helper(dir:File):Seq[File] = if(dir.isDirectory) {
@@ -37,6 +38,24 @@ package object util {
       }
 
       def hasNext = nextLine != null
+    }
+  }
+
+
+  implicit class ClassTagExtras[T](ct:ClassTag[T]) {
+    private val strTag = classTag[String]
+
+    // todo Check for parse failures
+    def parseString(str:String):Option[T] = ct match {
+      case ClassTag.Boolean => Some(str.toBoolean.asInstanceOf[T])
+      case ClassTag.Byte => Some(str.toByte.asInstanceOf[T])
+      case ClassTag.Short => Some(str.toShort.asInstanceOf[T])
+      case ClassTag.Int => Some(str.toInt.asInstanceOf[T])
+      case ClassTag.Long => Some(str.toLong.asInstanceOf[T])
+      case ClassTag.Float => Some(str.toFloat.asInstanceOf[T])
+      case ClassTag.Double => Some(str.toDouble.asInstanceOf[T])
+      case _ if ct == strTag => Some(str.asInstanceOf[T])
+      case _ => None
     }
   }
 }
