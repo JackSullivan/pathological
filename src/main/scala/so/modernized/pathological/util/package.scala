@@ -2,6 +2,8 @@ package so.modernized.pathological
 
 import java.io.{BufferedReader, File}
 import scala.reflect._
+import scala.collection.mutable
+import scala.util.matching.Regex
 
 /**
  * @author John Sullivan
@@ -39,6 +41,10 @@ package object util {
 
       def hasNext = nextLine != null
     }
+  }
+
+  implicit class RegexExtras(r:Regex) {
+    def matches(str:String):Boolean = r.findFirstIn(str).isDefined
   }
 
 
