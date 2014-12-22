@@ -47,20 +47,17 @@ package object util {
     def matches(str:String):Boolean = r.findFirstIn(str).isDefined
   }
 
+  implicit class ClassExtras[T](co:Class[T]) {
 
-  implicit class ClassTagExtras[T](ct:ClassTag[T]) {
-    private val strTag = classTag[String]
-
-    // todo Check for parse failures
-    def parseString(str:String):Option[T] = ct match {
-      case ClassTag.Boolean => Some(str.toBoolean.asInstanceOf[T])
-      case ClassTag.Byte => Some(str.toByte.asInstanceOf[T])
-      case ClassTag.Short => Some(str.toShort.asInstanceOf[T])
-      case ClassTag.Int => Some(str.toInt.asInstanceOf[T])
-      case ClassTag.Long => Some(str.toLong.asInstanceOf[T])
-      case ClassTag.Float => Some(str.toFloat.asInstanceOf[T])
-      case ClassTag.Double => Some(str.toDouble.asInstanceOf[T])
-      case _ if ct == strTag => Some(str.asInstanceOf[T])
+    def parsePrimitive(str:String):Option[T] = co match {
+      case c if c == classOf[Boolean] => Some(str.toBoolean.asInstanceOf[T])
+      case c if c == classOf[Byte] => Some(str.toByte.asInstanceOf[T])
+      case c if c == classOf[Short] => Some(str.toShort.asInstanceOf[T])
+      case c if c == classOf[Int] => Some(str.toInt.asInstanceOf[T])
+      case c if c == classOf[Long] => Some(str.toLong.asInstanceOf[T])
+      case c if c == classOf[Float] => Some(str.toFloat.asInstanceOf[T])
+      case c if c == classOf[Double] => Some(str.toDouble.asInstanceOf[T])
+      case c if c == classOf[String] => Some(str.asInstanceOf[T])
       case _ => None
     }
   }

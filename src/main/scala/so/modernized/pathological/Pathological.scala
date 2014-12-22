@@ -51,8 +51,8 @@ class ReadablePathoid(paths:Iterable[Path]) {
 
   def intoMap[Key, Value](implicit keyTag:ClassTag[Key], valTag:ClassTag[Value]):Map[Key, Value] = lineIter.flatMap { line =>
     line split splitter match {
-      case Array(k,v) => keyTag.parseString(k) -> valTag.parseString(v) match {
-        case (Some(key), Some(value)) => Some(key -> value)
+      case Array(k,v) => keyTag.runtimeClass.parsePrimitive(k) -> valTag.runtimeClass.parsePrimitive(v) match {
+        case (Some(key), Some(value)) => Some(key.asInstanceOf[Key] -> value.asInstanceOf[Value])
         case (Some(key), None) =>
           println("WARNING: Failed to parse value %s into type %s".format(v, valTag.runtimeClass.getName))
           None
@@ -82,4 +82,16 @@ class ReadablePathoid(paths:Iterable[Path]) {
         }
       }
     }
+
+
+  def linewiseInto[Target:ClassTag]:Iterator[Target] = {
+    // todo pick the constructor better
+    val con = classTag[Target].getClass.getConstructors.head
+    val params = con.getParameterTypes
+    lineIter.map { line =>
+      val arr = line split splitter
+      assert(arr.size == params.size)
+      con.newInstance((params zip arr).map{case (c,s) => c.parsePrimitive(s).get.asInstanceOf[Object]} :_*).asInstanceOf[Target]
+    }
+  }
 }

@@ -10,6 +10,7 @@ import so.modernized.pathological.util._
 /**
  * @author John Sullivan
  */
+/*
 object Pathoid {
 
   private class GlobResolver(globPath:Path) extends SimpleFileVisitor[Path] {
@@ -32,7 +33,7 @@ object Pathoid {
   def ~~ = new PathoidBuilder(Paths.get(System.getProperty("user.home")))
   def pwd = new PathoidBuilder(Paths get "")
   def ** = new PathoidBuilder(Paths get "**")
-  private class PathoidBuilder(var p:Path) {
+  protected class PathoidBuilder(var p:Path) {
     def this(str:String) = this(Paths get str)
 
     def /(otherString:String) = {
@@ -63,9 +64,9 @@ object Pathoid {
       def helper(dir:File):Seq[File] = if(dir.isDirectory) {
         dir.listFiles flatMap helper
       } else {
-        Seq(dir.toPath)
+        Seq(dir.toPath.toFile)
       }
-      helper(p, List.empty[Path])
+      helper(p)
     }
 
     def buildExisting:Iterable[Path] = {
@@ -77,6 +78,7 @@ object Pathoid {
   }
 
 }
+*/
 
 class PathSegment(protected[path] val p:Path) {
   def /(next:String) = new PathSegment(p resolve next)
@@ -113,7 +115,7 @@ object PathSegmentImplicits {
   def resolveGlob(p:Path):Iterable[Path] = {
     val containsGlob = """(?<!\\)\*|(?<!\\)\?""".r // match * or ? unless it is preceded by \
     def rePathify(ps:Iterable[Path]):Path = Paths get ps.map(_.toString).mkString(FileSystems.getDefault.getSeparator)
-    val (roots, _) = p.iterator().asScala.toList.span(containsGlob.matches)
+    val (roots, _) = p.iterator().asScala.toList.span(pathlet => containsGlob matches pathlet.toString)
     val resolver = new GlobResolver(p)
     Files.walkFileTree(rePathify(roots), resolver)
     resolver.matches
