@@ -36,12 +36,16 @@ object Pathological {
       else Iterable.empty[Path]
     }
 
-  def read(filepath:String):ReadablePathoid = {
+  def read1(filepath:String):ReadablePathoid = {
     val paths = expandPath(Paths get filepath)
     assert(paths.size != 0)
     assert(paths.forall(_.toFile.canRead))
     new ReadablePathoid(paths)
   }
+
+  /** Takes a string of glob style paths or a comma-separated string of same
+    * and returns a [[so.modernized.ReadablePathoid]] for further processing */
+  def read(fileLike:String) = new ReadablePathoid(fileLike.split(",").flatMap(f => expandPath(Paths get f)).map(expandGlob))
 }
 
 class ReadablePathoid(paths:Iterable[Path]) {
@@ -84,7 +88,7 @@ class ReadablePathoid(paths:Iterable[Path]) {
     }
 
 
-  def linewiseInto[Target:ClassTag]:Iterator[Target] = {
+  def linewiseIntoClass[Target:ClassTag]:Iterator[Target] = {
     // todo pick the constructor better
     val con = classTag[Target].getClass.getConstructors.head
     val params = con.getParameterTypes
@@ -94,4 +98,9 @@ class ReadablePathoid(paths:Iterable[Path]) {
       con.newInstance((params zip arr).map{case (c,s) => c.parsePrimitive(s).get.asInstanceOf[Object]} :_*).asInstanceOf[Target]
     }
   }
+
+  def linewiseInto[T1:ClassTag]:Iterator[T1]
+  def linewiseInto[T1:ClassTag, T2:ClassTag]:Iterator[(T1, T2)]
+  def linewiseInto[T1:ClassTag, T2:ClassTag, T3:ClassTag]:Iterator[(T1, T2, T3)]
+  def linewiseInto[T1:ClassTag, T2:ClassTag, T3:ClassTag, T4:ClassTag]:Iterator[(T1, T2, T3, T4)]
 }
