@@ -36,13 +36,6 @@ object Pathological {
       else Iterable.empty[Path]
     }
 
-  def read1(filepath:String):ReadablePathoid = {
-    val paths = expandPath(Paths get filepath)
-    assert(paths.size != 0)
-    assert(paths.forall(_.toFile.canRead))
-    new ReadablePathoid(paths)
-  }
-
   /** Takes a string of glob style paths or a comma-separated string of same
     * and returns a [[so.modernized.ReadablePathoid]] for further processing */
   def read(fileLike:String) = new ReadablePathoid(fileLike.split(",").flatMap(f => expandPath(Paths get f)).map(expandGlob))

@@ -10,14 +10,6 @@ import so.modernized.pathological.util._
 /**
  * @author John Sullivan
  */
-class PathSegment(protected[path] val p:Path) {
-  def /(next:String) = new PathSegment(p resolve next)
-  def /(otherPath:Path) = new PathSegment(p resolve otherPath)
-  def /(otherSegment:PathSegment) = new PathSegment(p resolve otherSegment.p)
-
-  override def toString = p.toAbsolutePath.toString
-
-}
 
 object PathSegmentImplicits {
 
@@ -50,10 +42,5 @@ object PathSegmentImplicits {
     Files.walkFileTree(rePathify(roots), resolver)
     resolver.matches
   }
-
-  def ~~ = new PathSegment(Paths get System.getProperty("user.home"))
-  def pwd = new PathSegment(Paths get "")
-  def ** = new PathSegment(Paths get "**")
-  def *(ext:String) = new PathSegment(Paths get ("*" + ensureDot(ext)))
 
 }
