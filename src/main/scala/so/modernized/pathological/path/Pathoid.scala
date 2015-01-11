@@ -16,8 +16,6 @@ object PathSegmentImplicits {
   implicit def path2segment(p:Path) = new PathSegment(p)
   implicit def segment2path(s:PathSegment) = s.p
 
-  private def ensureDot(str:String) = if(str startsWith ".") str else "." + str
-
   private class GlobResolver(globPath:Path) extends SimpleFileVisitor[Path] {
     val matcher = FileSystems.getDefault.getPathMatcher("glob:" + globPath.toString)
     val matches = mutable.ArrayBuffer[Path]()

@@ -38,7 +38,7 @@ object Pathological {
 
   /** Takes a string of glob style paths or a comma-separated string of same
     * and returns a [[so.modernized.ReadablePathoid]] for further processing */
-  def read(fileLike:String) = new ReadablePathoid(fileLike.split(",").flatMap(f => expandPath(Paths get f)).map(expandGlob))
+  def read(fileLike:String) = new ReadablePathoid(fileLike.split(",").flatMap(f => expandPath(Paths get f)).flatMap(expandGlob))
 }
 
 class ReadablePathoid(paths:Iterable[Path]) {
@@ -82,8 +82,7 @@ class ReadablePathoid(paths:Iterable[Path]) {
 
 
   def linewiseIntoClass[Target:ClassTag]:Iterator[Target] = {
-    // todo pick the constructor better
-    val con = classTag[Target].getClass.getConstructors.head
+    val con = classTag[Target].getClass.getConstructors.maxBy(_.getParameterTypes.length)
     val params = con.getParameterTypes
     lineIter.map { line =>
       val arr = line split splitter
@@ -92,8 +91,10 @@ class ReadablePathoid(paths:Iterable[Path]) {
     }
   }
 
+  /*
   def linewiseInto[T1:ClassTag]:Iterator[T1]
   def linewiseInto[T1:ClassTag, T2:ClassTag]:Iterator[(T1, T2)]
   def linewiseInto[T1:ClassTag, T2:ClassTag, T3:ClassTag]:Iterator[(T1, T2, T3)]
   def linewiseInto[T1:ClassTag, T2:ClassTag, T3:ClassTag, T4:ClassTag]:Iterator[(T1, T2, T3, T4)]
+  */
 }

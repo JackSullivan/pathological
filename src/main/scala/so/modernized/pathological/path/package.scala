@@ -7,6 +7,8 @@ import java.nio.file.Paths
  */
 package object path {
 
+  private def ensureDot(str:String) = if(str startsWith ".") str else "." + str
+
   def ~~ = new PathSegment(Paths get System.getProperty("user.home"))
   def pwd = new PathSegment(Paths get "")
   def ** = new PathSegment(Paths get "**")
