@@ -27,7 +27,7 @@ Plans and TODOs
 
 Everything after this point is still a todo.
 
-- [ ] (macro) code to generate intos of different arities
+- [ ] macro code to generate intos of different arities
 - [ ] into method for subtypes of Product
 - [ ] integrate path code and filesystem code from old namespace
 - [ ] integrate case class code from old namespace
